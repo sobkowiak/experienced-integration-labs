@@ -18,8 +18,16 @@ public class AccountAggregator implements AggregationStrategy {
 
     @Override
     public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-
-        return oldExchange;
+    	
+    	if (oldExchange == null) {
+    		return newExchange;
+    	} else {
+    		Account account = oldExchange.getIn().getBody(Account.class);
+    		CorporateAccount corporateAccount = newExchange.getIn().getBody(CorporateAccount.class);
+    		account.setSalesRepresentative(corporateAccount.getSalesContact());
+    		oldExchange.getIn().setBody(account);
+    		return oldExchange;
+    	}
     }
     
 }

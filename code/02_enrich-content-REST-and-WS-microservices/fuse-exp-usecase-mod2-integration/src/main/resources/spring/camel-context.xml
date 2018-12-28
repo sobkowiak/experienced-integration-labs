@@ -3,7 +3,6 @@
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:cxf="http://camel.apache.org/schema/cxf"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd       http://camel.apache.org/schema/cxf  http://camel.apache.org/schema/cxf/camel-cxf.xsd">
-
     <cxf:cxfEndpoint
         address="http://{{soap.host}}:{{soap.port}}/ws/customerService"
         id="customerWebService" loggingFeatureEnabled="true"
@@ -18,5 +17,49 @@
     <bean
         class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider" id="jsonProvider"/>
     <camelContext id="_camelContext1" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <json id="account-json" library="Jackson" unmarshalTypeName="org.globex.Account"/>
+        </dataFormats>
+        <route id="_route1">
+            <from id="_from1" uri="amqp:queue:accountQueue"/>
+            <log id="_log11" message="${body}"/>
+            <unmarshal id="_unmarshal1" ref="account-json"/>
+            <log id="_log12" message="${body}"/>
+            <multicast id="_multicast1" parallelProcessing="true" strategyRef="reconcileData">
+                <to id="_to1" pattern="InOut" uri="direct:callRestEndpoint"/>
+                <to id="_to2" pattern="InOut" uri="direct:callWSEndpoint"/>
+            </multicast>
+            <log  message="${body}"/>
+            <bean id="_bean1" method="defineNamedParameters" ref="processorBean"/>
+            <log id="_log1" message="${body}"/>
+            <to id="_to2" uri="sql:INSERT INTO USECASE.T_ACCOUNT (CLIENT_ID,SALES_CONTACT,COMPANY_NAME,COMPANY_GEO,COMPANY_ACTIVE,CONTACT_FIRST_NAME,CONTACT_LAST_NAME,CONTACT_ADDRESS,CONTACT_CITY,CONTACT_STATE,CONTACT_ZIP,CONTACT_PHONE,CREATION_DATE,CREATION_USER) VALUES (:#CLIENT_ID,:#SALES_CONTACT,:#COMPANY_NAME,:#COMPANY_GEO,:#COMPANY_ACTIVE,:#CONTACT_FIRST_NAME,:#CONTACT_LAST_NAME,:#CONTACT_ADDRESS,:#CONTACT_CITY,:#CONTACT_STATE,:#CONTACT_ZIP,:#CONTACT_PHONE,:#CREATION_DATE,:#CREATION_USER);"/>
+        </route>
+        <route id="_route2">
+            <from id="_from2" uri="direct:callRestEndpoint"/>
+            <setHeader headerName="CamelHttpMethod" id="_setHeader1">
+                <constant>POST</constant>
+            </setHeader>
+            <setHeader headerName="Content-Type" id="_setHeader2">
+                <constant>application/json</constant>
+            </setHeader>
+            <setHeader headerName="Accept" id="_setHeader3">
+                <constant>application/json</constant>
+            </setHeader>
+            <setHeader headerName="CamelHttpPath" id="_setHeader4">
+                <constant>/customerservice/enrich</constant>
+            </setHeader>
+            <setHeader headerName="CamelCxfRsUsingHttpAPI" id="_setHeader5">
+                <constant>True</constant>
+            </setHeader>
+            <marshal id="_marshal1" ref="account-json"/>
+            <toD id="_toD1" uri="http4://{{rest.host}}:{{rest.port}}/rest?bridgeEndpoint=true"/>
+            <unmarshal id="_unmarshal2" ref="account-json"/>
+        </route>
+        <route id="_route3">
+            <from id="_from3" uri="direct:callWSEndpoint"/>
+            <to id="_to3" uri="cxf:bean:customerWebService"/>
+            <convertBodyTo id="_convertBodyTo1" type="org.globex.CorporateAccount"/>
+            <log  message="${body.contact.firstName}"/>
+        </route>
     </camelContext>
 </beans>

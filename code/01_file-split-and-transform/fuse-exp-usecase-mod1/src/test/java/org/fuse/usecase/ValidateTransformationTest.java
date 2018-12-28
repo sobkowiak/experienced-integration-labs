@@ -25,6 +25,16 @@ public class ValidateTransformationTest extends CamelSpringTestSupport {
     @Produce(uri = "direct:csv2json-test-input") private ProducerTemplate startEndpoint;
 
     @Test public void transform() throws Exception {
+    	String expectedResult = readFile("src/test/data/account.json");
+    	String input = readFile("src/test/data/customer.csv");
+    	
+    	
+    	resultEndpoint.expectedBodiesReceived(jsonUnprettyPrint(expectedResult));
+        resultEndpoint.expectedMessageCount(1);
+
+        startEndpoint.sendBody(input);
+
+        resultEndpoint.assertIsSatisfied();
     }
 
     @Override protected RouteBuilder createRouteBuilder() throws Exception {
@@ -35,7 +45,7 @@ public class ValidateTransformationTest extends CamelSpringTestSupport {
     }
 
     @Override protected AbstractXmlApplicationContext createApplicationContext() {
-        return new ClassPathXmlApplicationContext("META-INF/spring/camel-context.xml");
+        return new ClassPathXmlApplicationContext("spring/camel-context.xml");
     }
 
     private String readFile(String filePath) throws Exception {

@@ -5,5 +5,85 @@
     <!-- Define a traditional camel context here -->
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <propertyPlaceholder id="properties" location="route.properties"/>
+        <endpoint id="csv2json" uri="dozer:csv2json?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=transform-json&amp;mappingFile=transformation.xml"/>
+        <dataFormats>
+            <bindy classType="org.acme.Customer" id="csv" type="Csv"/>
+            <json id="transform-json" library="Jackson"/>
+        </dataFormats>
+        <restConfiguration component="servlet"/>
+        <rest id="rest-b0386c92-93af-4073-9570-8d5f2bb18aec" path="/service">
+            <post id="post-6fad38be-65cb-451b-84a2-344f1867105f" uri="/customers">
+                <to uri="direct:inbox"/>
+            </post>
+        </rest>
+        <route id="_route3">
+            <from id="_from2" uri="direct:inbox"/>
+            <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
+            <log id="_log32" message="${body}"/>
+            <to id="_to34" pattern="InOnly" uri="amqp:queue:inputQueue"/>
+            <transform id="_transform1">
+                <constant>Processed the customer data.</constant>
+            </transform>
+        </route>
+        <route id="_route4">
+            <from id="_from42" uri="amqp:queue:inputQueue"/>
+            <log id="_log42" message="${body}"/>
+            <split id="_split31">
+                <tokenize token=";"/>
+                <to id="_to42" uri="direct:splitted"/>
+            </split>
+        </route>
+        <route id="_route5">
+            <!-- 
+            <setBody>
+            	<simple>insert into USECASE.T_ERROR (ERROR_CODE, ERROR_MESSAGE, MESSAGE, STATUS) values (111, '${exception.message}', '${body}', 'ERROR')</simple>
+            </setBody>
+            <to uri="sql:?useMessageBodyForSql=true"/>
+            -->
+            <!-- 
+            <log id="_log53" message="${exception.message}"/>
+            <to id="_to2" uri="sql:insert into USECASE.T_ERROR (ERROR_CODE, ERROR_MESSAGE, MESSAGE, STATUS) values (111, :#${exception.message}, :#${body}, 'ERROR')"/>
+            -->
+            <from id="_from52" uri="amqp:topic:errorNotificationTopic"/>
+            <log id="_log52" message="${body}"/>
+            <log id="_log53" message="${header.errorMessage}"/>
+            <to id="_to2" uri="sql:insert into USECASE.T_ERROR (ERROR_CODE, ERROR_MESSAGE, MESSAGE, STATUS) values (:#errorCode, :#errorMessage, :#${body}, 'ERROR')"/>
+        </route>
+        <route id="_route6">
+            <!-- 
+            <from id="_from1" uri="sql:select * from USECASE.T_ERROR where STATUS='FIXED'?consumer.initialDelay=0&amp;consumer.delay=50&amp;consumer.onConsume=delete from USECASE.T_ERROR where id = :#id"/>
+            -->
+            <from id="_from1" uri="sql:select * from USECASE.T_ERROR where STATUS='FIXED'?consumer.initialDelay=0&amp;consumer.delay=50&amp;consumer.onConsume=update USECASE.T_ERROR set STATUS='CLOSED' where id = :#id"/>
+            <setBody id="_setBody1">
+                <simple>${body[MESSAGE]}</simple>
+            </setBody>
+            <log id="_log62" message="${body}"/>
+            <to id="_to64" pattern="InOnly" uri="amqp:queue:inputQueue"/>
+        </route>
+        <route id="_route2">
+            <from id="_from2" uri="direct:splitted"/>
+            <unmarshal id="_unmarshal1" ref="csv"/>
+            <onException id="_onException1">
+                <exception>java.lang.IllegalArgumentException</exception>
+                <handled>
+                    <constant>true</constant>
+                </handled>
+                <log id="_log3" message="${body}"/>
+                <log id="_log3" message="${exception.message}"/>
+                <setHeader headerName="errorMessage" id="_setHeader1">
+                    <simple>${exception.message}</simple>
+                </setHeader>
+                <setHeader headerName="errorCode" id="_setHeader2">
+                    <constant>111</constant>
+                </setHeader>
+                <to id="_to1" pattern="InOnly" uri="amqp:topic:errorNotificationTopic"/>
+                <!-- 
+                <to id="_to1" pattern="InOnly" uri="amqp:topic:errorNotificationTopic?transferExchange=true"/>
+                -->
+            </onException>
+            <to id="_to3" uri="ref:csv2json"/>
+            <log id="_log2" message="${body}"/>
+            <to id="_to4" pattern="InOnly" uri="amqp:queue:accountQueue"/>
+        </route>
     </camelContext>
 </beans>
