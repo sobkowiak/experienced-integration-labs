@@ -33,7 +33,7 @@
           
     - Activate the `admin` user
     
-          echo "admin=admin,admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, Auditor, Administrator, SuperUser" >> etc/user.properties
+          echo "admin=admin,admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, Auditor, Administrator, SuperUser" >> etc/users.properties
           
     - Create config file for `NextGate` test service
     
