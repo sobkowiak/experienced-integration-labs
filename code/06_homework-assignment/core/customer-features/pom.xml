@@ -1,33 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.customer.app</groupId>
-    <artifactId>customer-features</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>feature</packaging>
+	<groupId>com.customer.app</groupId>
+	<artifactId>customer-features</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>feature</packaging>
 
-    <name>Customer :: Application :: Core :: Features File</name>
-    <description>All dependencies and bundles for the core project</description>
+	<name>Customer :: Application :: Core :: Features File</name>
+	<description>All dependencies and bundles for the core project</description>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <version>4.1.1</version>
-                    <extensions>true</extensions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.karaf.tooling</groupId>
-                <artifactId>karaf-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.karaf.tooling</groupId>
+					<artifactId>karaf-maven-plugin</artifactId>
+					<version>4.1.1</version>
+					<extensions>true</extensions>
+				</plugin>
+				<!-- http://karaf.922171.n3.nabble.com/Sudden-NoFileAssignedException-during-karaf-distro-build-td4054113.html -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.5.2</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.karaf.tooling</groupId>
+				<artifactId>karaf-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
