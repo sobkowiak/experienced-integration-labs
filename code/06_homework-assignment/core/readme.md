@@ -13,7 +13,14 @@
         
           mvn clean install
     
-    - Next locate the `core` folder and build it using the above command
+    - Next locate the `core` folder and build it using the above command. This will build all of the projects below it including:
+
+      - Artifacts - which has all of the files necessary for starting the web services.
+      - Services  - which has the NextGate test server and an OSGi service connection pool to the AMQ broker
+      - Inbound   - which runs a REST server and sends the message to a broker
+      - Xlate     - which translates the message from the Person format to the NextGate format
+      - Outbound  - which reads the final message from the broker and sends it to the NextGate sever
+      - Features  - which builds a features file for easy installation of the entire project on Fuse
     
 
 1. Deploy on Fuse
@@ -28,11 +35,11 @@
     
           echo "admin=admin,admin,manager,viewer,Monitor, Operator, Maintainer, Deployer, Auditor, Administrator, SuperUser" >> etc/user.properties
           
-    - Create config file for `nextgate` test service
+    - Create config file for `NextGate` test service
     
           echo "nextgate.ws.uri=http://localhost:9099/PersonEJBService/PersonEJB" >>  etc/com.davita.esb.empi.addorupdateempi.cfg
           
-      This file is used by the Config Admin to configure the Nextgate test service. The service will be available under this url
+      This file is used by the Config Admin to configure the NextGate test service. The service will be available under this url
       
     - Create config file for `outbound` integration route
     
@@ -47,8 +54,15 @@
     - Add the feature url and install the `customer` fearure. Ensure all bundles are up and running
     
           JBossFuse:karaf@root> features:addurl mvn:com.customer.app/customer-features/1.0-SNAPSHOT/xml/features
+      
+      This command tells Fuse where in the Maven repo to find the feature file with te customer app. 
+      
+    - Next install the custommer app using following command	  
+	        
           JBossFuse:karaf@root> features:install customer-features
           
+      This will install all of the core bundles and their dependencies. To see all of the bundles that were installed and if they started properly you can run the command:  
+      
           JBossFuse:karaf@root> osgi:list 
           START LEVEL 100 , List Threshold: 50
           ID     State         Blueprint      Spring    Level  Name
