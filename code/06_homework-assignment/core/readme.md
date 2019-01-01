@@ -2,6 +2,8 @@
 
 ## Prerequisities 
 
+- JDK 8 
+- Maven 3.x
 - Download `jboss-fuse-karaf-6.3.0.redhat-187.zip` from https://access.redhat.com
 - Ensure you have `curl`or `httpie`(https://httpie.org/) installed
 
@@ -98,9 +100,9 @@ After successfull deployment of the `custommer` the services will be listening a
       
 - Call the REST service using one of follwimg commands
 
-      curl -X POST -H "Accept: application/xml" -H "Content-Type: application/xml"   http://localhost:9098/cxf/demos/match  -d @PatientDemographics.xml
+      curl -X POST -H "Accept: application/xml" -H "Content-Type: application/xml"   http://localhost:9098/cxf/demos/match  -d @Person.xml
       
-      http --all POST   http://localhost:9098/cxf/demos/match  Accept:application/xml Content-Type:application/xml  @PatientDemographics.xml
+      http --all POST   http://localhost:9098/cxf/demos/match  Accept:application/xml Content-Type:application/xml  @Person.xml
       
       
   You should get following result
@@ -111,4 +113,4 @@ After successfull deployment of the `custommer` the services will be listening a
 
       JBossFuse:karaf@root> log:display
       
-      
+ 
