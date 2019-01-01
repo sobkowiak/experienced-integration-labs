@@ -1,0 +1,1 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ns2:executeMatchUpdateResponse xmlns:ns2="http://webservice.index.mdm.sun.com/"><return><EUID>XML</EUID><matchFieldChanged>false</matchFieldChanged><overlayDetected>false</overlayDetected><resultCode>1</resultCode></return></ns2:executeMatchUpdateResponse></soap:Body></soap:Envelope>

@@ -54,6 +54,9 @@
 
 			<log message="WS called!! ${body}" loggingLevel="DEBUG"
 				logName="com.redhat.usecase" />
+				
+			<!-- Added to track NextGate responses -->
+			<inOnly id="response-queue" uri="active-mq:q.empi.nextgate.resp" />
 
 			<onException>
 				<exception>java.net.ConnectException</exception>

@@ -21,6 +21,10 @@
       <artifactId>camel-cxf</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-soap</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.customer.app</groupId>
       <artifactId>artifacts</artifactId>
       <version>1.0-SNAPSHOT</version>
@@ -30,6 +34,56 @@
       <artifactId>mq-service</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>com.customer.app</groupId>
+      <artifactId>integration-test-server</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-test-spring</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+	<!-- logging -->
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-log4j12</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.osgi</groupId>
+		<artifactId>org.osgi.core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.osgi</groupId>
+		<artifactId>spring-osgi-core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.camel</groupId>
+		<artifactId>camel-jaxb</artifactId>
+	</dependency>
+	<!-- the ActiveMQ broker is optional and can be removed if connecting to 
+		a remote broker only -->
+	<dependency>
+		<groupId>org.apache.activemq</groupId>
+		<artifactId>activemq-broker</artifactId>
+	</dependency>
+
+	<dependency>
+		<groupId>org.apache.activemq</groupId>
+		<artifactId>activemq-kahadb-store</artifactId>
+	</dependency>
   </dependencies>
 
   <build>
