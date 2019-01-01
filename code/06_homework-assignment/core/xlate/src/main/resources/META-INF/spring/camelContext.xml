@@ -48,7 +48,7 @@
 			<log message="Sending to nextgate queue..." loggingLevel="DEBUG"
 				logName="com.redhat.usecase" />
 
-			<inOnly uri="active-mq:q.empi.nextgate.out" />
+			<inOnly id="outbound-queue" uri="active-mq:q.empi.nextgate.out" />
 
 			<onException>
 				<exception>org.apache.camel.TypeConversionException</exception>
